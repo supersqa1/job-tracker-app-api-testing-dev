@@ -1,7 +1,9 @@
 
-from operator import call
+import pytest
+
 from clients.api_client import APIClient
 
+@pytest.mark.tcid("007")
 def test_verify_user_can_create_application():
 
     # create a payload
@@ -23,7 +25,8 @@ def test_verify_user_can_create_application():
     create_application_json = api_client.post_json(endpoint, payload, expected_status_code=201)
 
     # verify the response
-    assert isinstance(create_application_json["id"], int), f"Create application endpoint response ID is not integer. Actual: {create_application_json["id"]}"
+    assert isinstance(create_application_json["id"], int), \
+        f"Create application endpoint response ID is not integer. Actual: {create_application_json['id']}"
     assert create_application_json["company_name"] == payload["company_name"]
     assert create_application_json["job_url"] == payload["job_url"]
     assert create_application_json["location"] == payload["location"]

@@ -2,10 +2,13 @@
 Tests that API keys are stored securely in the database.
 """
 
+import pytest
+
 from clients.api_client import APIClient
 from clients.sql_client import SQLClient
 
 
+@pytest.mark.tcid("021")
 def test_verify_api_key_is_not_stored_as_plain_text():
     """
     Verify newly created API keys are hashed in the database, not stored in plain text.
@@ -19,7 +22,7 @@ def test_verify_api_key_is_not_stored_as_plain_text():
                 "name": "API Testing Automation"
                 }
 
-    create_key_json = api_client.post_json(create_api_key_endpoint, create_api_key_payload, expected_status_code=201)
+    create_key_json = api_client.post_json(create_api_key_endpoint, create_api_key_payload)
     api_key = create_key_json["api_key"]
     key_prefix = create_key_json["key_prefix"]
     key_id = create_key_json["id"]

@@ -91,7 +91,7 @@ class APIClient:
         response = self.get(endpoint, headers, expected_status_code)
         return response.json()
 
-    def post(self, endpoint, data, headers=None, expected_status_code=200):
+    def post(self, endpoint, data, headers=None, expected_status_code=201):
         """
         Send a POST request with a JSON body and assert the response status.
 
@@ -112,7 +112,7 @@ class APIClient:
         self.verify_status_code(response, expected_status_code, url)
         return response
 
-    def post_json(self, endpoint, data, headers=None, expected_status_code=200):
+    def post_json(self, endpoint, data, headers=None, expected_status_code=201):
         """
         Send a POST request and return the parsed JSON body.
 
