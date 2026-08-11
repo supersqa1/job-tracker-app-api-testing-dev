@@ -2,6 +2,7 @@ name: API Tests With App
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   api-tests:
@@ -49,4 +50,4 @@ jobs:
           exit 1
 
       - name: Run API tests
-        run: pytest -q
+        run: pytest tests -q
