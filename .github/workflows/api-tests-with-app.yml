@@ -1,0 +1,52 @@
+name: API Tests With App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    name: Run API Tests With App
+    runs-on: ubuntu-latest
+
+    env:
+      BASE_URL: http://localhost:3050
+      DATABASE_PATH: ${{ github.workspace }}/app-under-test/backend/data/job_tracker.db
+
+    steps:
+      - name: Checkout test framework
+        uses: actions/checkout@v5
+
+      - name: Checkout app under test
+        uses: actions/checkout@v5
+        with:
+          repository: supersqa1/job-tracker-app-for-testing
+          path: app-under-test
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install test framework dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install app dependencies
+        working-directory: app-under-test/backend
+        run: pip install -r requirements.txt
+
+      - name: Start API app
+        working-directory: app-under-test/backend
+        run: |
+          PYTHONPATH=. python -m uvicorn app.main:app --host 0.0.0.0 --port 3050 &
+
+      - name: Wait for API app
+        run: |
+          for i in {1..30}; do
+            curl -f http://localhost:3050/api/v1/public/status && exit 0
+            sleep 2
+          done
+          echo "API app did not start in time"
+          exit 1
+
+      - name: Run API tests
+        run: pytest -q
