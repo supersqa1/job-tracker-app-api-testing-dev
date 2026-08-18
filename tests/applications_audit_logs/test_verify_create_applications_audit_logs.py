@@ -39,6 +39,8 @@ def test_verify_create_application_writes_to_audit_logs():
 
     # verify the log table using SQL
     # create connection
+    # TODO: use proper path
+#     DATABASE_PATH = "/Users/admas/Desktop/QA-Automation/job-tracker-app-for-testing/backend/data/job_tracker.db"
     connection = sqlite3.connect(DATABASE_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()

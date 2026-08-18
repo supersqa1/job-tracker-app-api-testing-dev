@@ -1,45 +1,39 @@
-name: API Tests With App
+name: API Tests
 
-on:
-  workflow_dispatch:
-  push:
+on: push
 
 jobs:
   api-tests:
-    name: Run API Tests With App
+    name: Run API Test Suite - V1
     runs-on: ubuntu-latest
-
     env:
-      BASE_URL: http://localhost:3050
-      DATABASE_PATH: ${{ github.workspace }}/app-under-test/backend/data/job_tracker.db
+        DATABASE_PATH: ${{ github.workspace }}/app-under-test/backend/data/job_tracker.db
 
     steps:
       - name: Checkout test framework
         uses: actions/checkout@v5
 
-      - name: Checkout app under test
+      - name: Checkout application code
         uses: actions/checkout@v5
-        with:
+        with: 
           repository: supersqa1/job-tracker-app-for-testing
           path: app-under-test
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.14"    
 
-      - name: Install test framework dependencies
-        run: pip install -r requirements.txt
-
-      - name: Install app dependencies
+      - name: Install App Dependencies
         working-directory: app-under-test/backend
         run: pip install -r requirements.txt
 
-      - name: Start API app
+      - name: Run The Application Under Test
         working-directory: app-under-test/backend
         run: |
-          PYTHONPATH=. python -m uvicorn app.main:app --host 0.0.0.0 --port 3050 &
-
+          cp .env.example .env
+          uvicorn app.main:app --host 0.0.0.0 --port 3050 &
+      
       - name: Wait for API app
         run: |
           for i in {1..30}; do
@@ -48,9 +42,18 @@ jobs:
           done
           echo "API app did not start in time"
           exit 1
+      - name: debug
+        run: |
+          pwd
+          ls -la
+          which -a python3
+          python3 --version
+          ls -la ..
 
-      - name: Run API tests
-        run: pytest tests --html=reports/api-test-report.html --self-contained-html
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run api tests
+        run: python3 -m pytest tests --html=reports/api-test-report.html --self-contained-html
 
       - name: Upload HTML test report
         uses: actions/upload-artifact@v4
