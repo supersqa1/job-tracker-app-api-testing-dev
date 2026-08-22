@@ -1,35 +1,32 @@
-"""
-Parametrized tests for creating applications with different status values.
-"""
-
-import pytest
 
 from clients.api_client import APIClient
 from helpers.application_helper import build_create_application_payload
 from helpers.application_helper import create_application
-from helpers.application_helper import delete_application
+import pytest
 
-VALID_STATUSES = [
+ALLOWED_STATUS = [
     "potential",
     "applied",
     "in_progress",
     "final_stage",
     "hired",
     "rejected",
-    "withdrawn",
-]
+    "withdrawn"
+    ]
 
+@pytest.mark.parametrize("expected_status", ALLOWED_STATUS)
+def test_verify_user_can_create_application_with_status(expected_status):
+    print(f"Running test for status: {expected_status}")
 
-@pytest.mark.parametrize("status", VALID_STATUSES)
-def test_verify_user_can_create_application_with_status(status):
-    """Verify an application can be created with each valid status."""
+    # create api client
     api_client = APIClient()
 
-    payload = build_create_application_payload(status=status)
-    application = create_application(api_client, payload=payload)
+    # build payload with desired status
+    payload = build_create_application_payload(status=expected_status)
 
-    assert application["status"] == status, (
-        f"Expected status '{status}' but got '{application['status']}'"
-    )
+    # make the call
+    response = create_application(api_client, payload=payload)
 
-    delete_application(api_client, application["id"])
+    # verify it was created correctly
+    assert response['id'], f"Create application with status '{expected_status}' returned None for ID"
+    assert response['status'] == expected_status, f"Create application with status '{expected_status}' returned {response['status']} for status"
