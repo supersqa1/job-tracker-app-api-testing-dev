@@ -8,6 +8,11 @@ def api_client():
     return APIClient()
 
 
+@pytest.fixture
+def unauthenticated_api_client():
+    return APIClient(authenticated=False)
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--tcid",
