@@ -1,3 +1,13 @@
+import pytest
+
+from clients.api_client import APIClient
+
+
+@pytest.fixture
+def api_client():
+    return APIClient()
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--tcid",
@@ -5,6 +15,7 @@ def pytest_addoption(parser):
         default=[],
         help="Run tests that match a test case id marker. Can be used multiple times."
     )
+
 
 def pytest_collection_modifyitems(config, items):
     selected_tcids = config.getoption("--tcid")
