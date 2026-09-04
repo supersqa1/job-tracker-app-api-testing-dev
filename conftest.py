@@ -1,5 +1,4 @@
 import pytest
-
 from clients.api_client import APIClient
 from helpers.application_helper import create_application, delete_application
 

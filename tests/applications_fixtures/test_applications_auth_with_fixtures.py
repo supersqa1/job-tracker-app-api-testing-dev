@@ -1,14 +1,20 @@
-"""
-Application tests that use authenticated and unauthenticated API client fixtures.
+"""Fixture demo tests for unauthenticated API client setup.
+
+These tests intentionally demonstrate how pytest fixtures provide reusable API
+clients while still being tracked as standalone automated test cases.
 """
 
+import pytest
 
+
+@pytest.mark.tcid("080")
 def test_verify_applications_list_requires_authentication(unauthenticated_api_client):
-    response = unauthenticated_api_client.get(
+    """Verify the unauthenticated API client fixture receives a 401 response."""
+    response_json = unauthenticated_api_client.get_json(
         "/api/v1/applications",
-        expected_status_code=401
+        expected_status_code=401,
     )
 
-    response_body = response.json()
-    assert response_body["error"]["code"] == "AUTHENTICATION_REQUIRED"
-    assert response_body["error"]["message"] == "Authentication required"
+    assert response_json["error"]
+    assert response_json["error"]["code"] == "AUTHENTICATION_REQUIRED"
+    assert response_json["error"]["message"] == "Authentication required"
